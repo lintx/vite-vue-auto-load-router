@@ -11,17 +11,15 @@ function findCommonPrefix(paths) {
     });
 }
 
-async function load(globs, config = {routerPrefix: "/", clearPathPrefix: true, setName: true}) {
+function load(globs, config = {routerPrefix: "/", clearPathPrefix: true, setName: true}) {
     if (typeof globs !== "object") throw "globs must object"
     if (config.clearPathPrefix === true) {
         config.clearPathPrefix = findCommonPrefix(Object.keys(globs))
     }
     if (typeof config.clearPathPrefix !== 'string') throw "clearPathPrefix must string or true"
-    return await Promise.all(Object.entries(globs).map(async ([path, glob]) => {
+    return Object.entries(globs).map(([path, glob]) => {
         let pathname = path.startsWith(config.clearPathPrefix) ? path.slice(config.clearPathPrefix.length) : path
         pathname = pathname.toLowerCase().replace('/_', '/:').replace('.vue', '')
-        if (typeof glob === "function") glob = await glob()
-        if (typeof glob === "object" && typeof glob.default === "object") glob = glob.default
         if (typeof glob.render !== "function") throw "glob must .vue glob"
 
         const globConfig = glob.route ?? {}
@@ -38,7 +36,7 @@ async function load(globs, config = {routerPrefix: "/", clearPathPrefix: true, s
             delete route.component
         }
         return route
-    }))
+    })
 }
 
 export default load

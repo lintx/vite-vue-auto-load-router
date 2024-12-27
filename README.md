@@ -23,9 +23,11 @@ npm i vite-vue-auto-router
 import {createRouter, createWebHistory} from "vue-router";
 import loadRouter from "vite-vue-auto-router"
 
+const pages = import.meta.glob('@/pages/**.vue',{eager:true,import:"default"})
+const routes = await loadRouter(pages)
 const router = createRouter({
     history: createWebHistory(import.meta.env.VITE_PATH??""),
-    routes: await loadRouter(import.meta.glob('@/pages/**.vue')),
+    routes,
 })
 
 export default router
