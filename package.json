@@ -1,0 +1,15 @@
+{
+  "name": "vite-vue-auto-load-router",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lintx/vite-vue-auto-load-router"
+  },
+  "author": "LinTx",
+  "license": "MIT",
+  "description": ""
+}
