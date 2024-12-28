@@ -1,20 +1,28 @@
 
-function findCommonPrefix(paths) {
-    if (paths.length <= 1) return '';
-    return paths.reduce((prefix, str) => {
-        let i = 0;
-        // 查找当前前缀和当前字符串的公共部分
-        while (i < prefix.length && i < str.length && prefix[i] === str[i]) {
-            i++;
-        }
-        return prefix.slice(0, i);  // 更新前缀
-    });
-}
-
-function load(globs, config = {routerPrefix: "/", clearPathPrefix: true, setName: true}) {
+export function loadRouter(globs, config = {}) {
     if (typeof globs !== "object") throw "globs must object"
+    config = Object.assign({
+        routerPrefix: "/",
+        clearPathPrefix: true,
+        setName: true,
+        autoIndex: true,
+    }, config)
     if (config.clearPathPrefix === true) {
-        config.clearPathPrefix = findCommonPrefix(Object.keys(globs))
+        const paths = Object.keys(globs)
+        if (paths.length <= 1) {
+            const path = paths[0]
+            const lastSlashIndex = path.lastIndexOf('/');
+            config.clearPathPrefix = path.slice(0, lastSlashIndex + 1);
+        }else {
+            config.clearPathPrefix = paths.reduce((prefix, str) => {
+                let i = 0;
+                // 查找当前前缀和当前字符串的公共部分
+                while (i < prefix.length && i < str.length && prefix[i] === str[i]) {
+                    i++;
+                }
+                return prefix.slice(0, i);  // 更新前缀
+            });
+        }
     }
     if (typeof config.clearPathPrefix !== 'string') throw "clearPathPrefix must string or true"
     return Object.entries(globs).map(([path, glob]) => {
@@ -29,8 +37,13 @@ function load(globs, config = {routerPrefix: "/", clearPathPrefix: true, setName
         }
         if (config.setName) {
             route.name = pathname.replace('/:', '/').split('/').filter(Boolean).join('-')
+            if (typeof config.setName === "string"){
+                route.name = config.setName + route.name
+            }else if (typeof config.setName === "function"){
+                route.name = config.setName(pathname, glob)
+            }
         }
-        if (pathname === 'index') route.alias = '/'
+        if (config.autoIndex && pathname === 'index') route.alias = '/'
         route = Object.assign(route, globConfig)
         if (globConfig.hasOwnProperty("component") && globConfig.component === void 0) {
             delete route.component
@@ -38,5 +51,3 @@ function load(globs, config = {routerPrefix: "/", clearPathPrefix: true, setName
         return route
     })
 }
-
-export default load

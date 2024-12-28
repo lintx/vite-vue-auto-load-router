@@ -1,7 +1,7 @@
 # vite-vue-auto-load-router
 ## 介绍
-基于 vite + vue3 + vue-router 实现的自动路由生成工具
-2行代码即可将指定目录下的 vue 文件自动生成`createRouter`方法所需要路由数据。
+基于 vite + vue3 + vue-router 实现的自动路由生成工具。  
+3行代码即可将指定目录下的 vue 文件自动生成`createRouter`方法所需要路由数据。
 
 
 ## 特性
@@ -21,10 +21,13 @@ npm i vite-vue-auto-router
 ```javascript
 // router.js
 import {createRouter, createWebHistory} from "vue-router";
-import loadRouter from "vite-vue-auto-router"
+// 1.导入工具
+import {loadRouter} from "vite-vue-auto-router"
 
+// 2.调用glob，注：必须使用{eager:true,import:"default"}参数
 const pages = import.meta.glob('@/pages/**.vue',{eager:true,import:"default"})
-const routes = await loadRouter(pages)
+// 3.然后将返回值传给loadRouter即可得到需要的数组
+const routes = loadRouter(pages)
 const router = createRouter({
     history: createWebHistory(import.meta.env.VITE_PATH??""),
     routes,
@@ -47,11 +50,12 @@ createApp(App).use(router).mount('#app')
 `import.meta.glob`的具体使用请参阅[vite文档](https://cn.vitejs.dev/guide/features.html#glob-import)。  
 第二个参数为可选参数，默认为`{routerPrefix: "/", clearPathPrefix: true, setName: true}`。  
 
-| 参数名             | 默认值    | 参数类型            | 描述                                                  |
-|-----------------|--------|-----------------|-----------------------------------------------------|
-| routerPrefix    | `/`    | `string`        | 路由前缀                                                |
-| clearPathPrefix | `true` | `true`/`string` | 清除路径前缀，为`true`时清除所有`.vue`文件路径的共同前缀；为`string`时清除指定前缀 |
-| setName         | `true` | `boolean`       | 是否设置路由名称，为`true`时将文件名作为路由名称；为`false`时不设置路由名称        |
+| 参数名             | 默认值    | 参数类型                          | 描述                                                                                                                              |
+|-----------------|--------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| routerPrefix    | `/`    | `string`                      | 路由前缀                                                                                                                            |
+| clearPathPrefix | `true` | `true`/`string`               | 清除路径前缀，为`true`时清除所有`.vue`文件路径的共同前缀；为`string`时清除指定前缀                                                                             |
+| setName         | `true` | `boolean`/`string`/`function` | 是否设置路由名称，为`true`时将文件名作为路由名称；为`false`时不设置路由名称；为`string`时将该值附加到自动的`name`前面；为`function`时，`function`可以接收2个参数，分别是处理过的path和`import`实体 |
+| autoIndex       | `true` | `boolean`                     | 是否自动设置`index`的路由为`/`的alias                                                                                                      |
 
 ## 示例
 ```
