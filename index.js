@@ -28,7 +28,7 @@ export function loadRouter(globs, config = {}) {
     return Object.entries(globs).map(([path, glob]) => {
         let pathname = path.startsWith(config.clearPathPrefix) ? path.slice(config.clearPathPrefix.length) : path
         pathname = pathname.toLowerCase().replace('/_', '/:').replace('.vue', '')
-        if (typeof glob.render !== "function") throw "glob must .vue glob"
+        // if (typeof glob.render !== "function") throw "glob must .vue glob"
 
         const globConfig = glob.route ?? {}
         let route = {
